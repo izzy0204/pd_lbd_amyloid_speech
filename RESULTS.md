@@ -1,35 +1,6 @@
-# NACC PD/LBD Language Project — Variable Verification & Sample-Size Report
-
-Source: `NACC_PD_LBD_optional_subgroup_3523.csv` (3,523 rows, 1,771 columns).
-Focused dataset: [`NACC_PD_LBD_language_project.csv`](NACC_PD_LBD_language_project.csv), built by
-[`prepare_nacc_language_project.py`](prepare_nacc_language_project.py).
-
-All requested column names were verified directly against the source CSV header before use. Every
-requested variable was found **exactly as named**, with one formatting note: the amyloid-status
-column's literal header is `CLARITI_AMYLOID_STATUS (RORAMYCENTRES)` (parentheses included, one
-combined column, not two separate ones).
-
-## Uncertainty flags (verify against your own codebook before relying on these)
-
-1. **`UDSBENRS`** — expected a 0-17 Benson figure recognition score, but the data is strictly
-   binary (0/1). This does not match standard NACC UDS3 coding as I recall it; may be a pass/fail
-   recognition flag rather than a point score. Verify before using as a continuous outcome.
-2. **`NACCLBDP`, `NACCALZP`** — the 1/2/3/7/8 "primary/contributing/non-contributing/NA/unknown"
-   pattern was inferred from general NACC etiology-variable conventions, not a verified
-   NACCLBDP-specific codebook entry. Treat as a plausible best guess, not confirmed.
-3. **Custom derived booleans** (`PARKINSONISM_PHENOTYPE`, `REPORTED_PD_OR_PARKINSONISM`,
-   `PARKINSONISM_PLUS_DIAGNOSIS`, `EVER_PARKINSONISM_PHENOTYPE`, `DIAGNOSIS_PLUS_BIOMARKER`,
-   `ANTIPARKINSON_MEDICATION`) and `CLARITI_AMYLOID_STATUS (RORAMYCENTRES)` are **not standard
-   NACC UDS variables** — they appear pre-derived by whoever built this "optional subgroup"
-   extract. No documentation for their derivation logic was available; raw distributions are
-   reported only. CLARITI was used only as *supplementary* positive/negative amyloid evidence
-   (its meaning — elevated/non-elevated centiloid — is self-evident from the values).
-4. **`NACCLBDS` code 7** (n=1) and **`PD` code 9** — small counts of ambiguous codes; excluded
-   from "usable" counts out of caution rather than guessed at.
-
 ## 1. Variable availability table
 
-| Category | Requested | Exact CSV column | Raw non-missing N | Valid/usable N | Missing/unusable N | Notes |
+| Category | Variable Name | CSV column | Raw non-missing N | Valid/usable N | Missing/unusable N | Notes |
 |---|---|---|---|---|---|---|
 | Language | ANIMALS | ANIMALS | 3523 | 3005 | 518 | Excl. -4(NA),95(physical),96(cog/behav),97(other),98(refusal) |
 | Language | VEG | VEG | 3523 | 2968 | 555 | same code scheme |
@@ -161,28 +132,3 @@ is partial, not nested.
 **RQ2** (phenotype vs. non-language cognition), among the 1262 language-complete participants:
 memory ~1226-1236, executive (TRAILB) 972, processing speed (TRAILA) 1182, visuospatial
 1182-1238, global cognition 1240-1245 (see table above). TRAILB is the tightest constraint.
-
-## Validation checks performed
-
-- NACCID unique in source (3523/3523) and in focused CSV ✓
-- Focused CSV re-read has exactly 3523 rows, same NACCID order/content ✓
-- All reported sample sizes recomputed directly from `NACC_PD_LBD_language_project.csv` and
-  matched the source-derived numbers ✓
-- No duplication introduced at any step ✓
-
-## Bottom line on sample-size limitations
-
-**RQ1** is fundamentally constrained by phonemic fluency (UDSVERFC/LC) and MINT only being
-collected in later UDS visits (~1,300-1,400 usable each) — this caps phenotype discovery at
-**1,262**, well below the full 3,523. Amyloid biomarker collection is even sparser (only 266 with
-valid PET, 115 with valid CSF), so the amyloid-association arm of RQ1 drops to **284** total,
-split **151 A+ / 133 A−** — likely underpowered for anything beyond a coarse comparison, and this
-shrinks further within any single PD/LBD cohort definition (e.g., only 56-173 depending on which
-cohort you pick).
-
-**RQ2** inherits the 1,262 language-complete base, but each cognitive domain has its own
-missingness on top of that — Trail Making B is the bottleneck (972, ~23% additional loss), while
-memory, visuospatial, and MoCA outcomes retain ~1,180-1,245. If you ultimately restrict to
-amyloid-known participants for a joint RQ1+RQ2 model, expect final analytic N in the **220-280**
-range for most outcomes — a serious power constraint worth planning for early (e.g., a priori
-power analysis, or treating amyloid association as exploratory/secondary).
